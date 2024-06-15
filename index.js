@@ -7,22 +7,33 @@ const PORT = process.env.PORT || 8800;
 // Use body-parser middleware to parse JSON bodies
 app.use(bodyParser.json());
 
-// Endpoint to receive Facebook Messenger webhook data
+// Endpoint to receive webhook data (Instagram and Facebook)
 app.post('/webhook', (req, res) => {
   const body = req.body;
 
   console.log('Received webhook:', JSON.stringify(body, null, 2));
 
-  if (body.object === 'page') {
+  // Check if this is an Instagram message
+  if (body.object === 'instagram') {
     body.entry.forEach(entry => {
-      const pageID = entry.id;
-      const timeOfEvent = entry.time;
-
       entry.messaging.forEach(event => {
         if (event.message) {
-          console.log('Message received: ', JSON.stringify(event.message, null, 2));
+          console.log('Instagram Message received: ', JSON.stringify(event.message, null, 2));
         } else {
-          console.log('Event received: ', JSON.stringify(event, null, 2));
+          console.log('Instagram Event received: ', JSON.stringify(event, null, 2));
+        }
+      });
+    });
+  }
+
+  // Check if this is a Facebook message
+  else if (body.object === 'page') {
+    body.entry.forEach(entry => {
+      entry.messaging.forEach(event => {
+        if (event.message) {
+          console.log('Facebook Message received: ', JSON.stringify(event.message, null, 2));
+        } else {
+          console.log('Facebook Event received: ', JSON.stringify(event, null, 2));
         }
       });
     });
