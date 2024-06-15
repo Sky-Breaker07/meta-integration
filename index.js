@@ -9,7 +9,25 @@ app.use(bodyParser.json());
 
 // Endpoint to receive Facebook Messenger webhook data
 app.post('/webhook', (req, res) => {
-  console.log('Received webhook:', JSON.stringify(req.body, null, 2)); // Better readability
+  const body = req.body;
+
+  console.log('Received webhook:', JSON.stringify(body, null, 2));
+
+  if (body.object === 'page') {
+    body.entry.forEach(entry => {
+      const pageID = entry.id;
+      const timeOfEvent = entry.time;
+
+      entry.messaging.forEach(event => {
+        if (event.message) {
+          console.log('Message received: ', JSON.stringify(event.message, null, 2));
+        } else {
+          console.log('Event received: ', JSON.stringify(event, null, 2));
+        }
+      });
+    });
+  }
+
   // Respond with a 200 status to acknowledge receipt of the webhook
   res.sendStatus(200);
 });
@@ -21,7 +39,7 @@ app.get('/webhook', (req, res) => {
   const challenge = req.query['hub.challenge'];
 
   // Verify the token
-  if (mode === 'subscribe' && token === '1234567890') { // Ensure this token matches your verification token
+  if (mode === 'subscribe' && token === '1234567890') {
     console.log('WEBHOOK_VERIFIED');
     res.status(200).send(challenge);
   } else {
