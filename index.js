@@ -7,7 +7,7 @@ const PORT = process.env.PORT || 8800;
 // Use body-parser middleware to parse JSON bodies
 app.use(bodyParser.json());
 
-// Endpoint to receive webhook data (Instagram and Facebook)
+// Endpoint to receive Instagram webhook data
 app.post('/webhook', (req, res) => {
   const body = req.body;
 
@@ -16,7 +16,8 @@ app.post('/webhook', (req, res) => {
   // Check if this is an Instagram message
   if (body.object === 'instagram') {
     body.entry.forEach(entry => {
-      entry.messaging.forEach(event => {
+      const { id, time, messaging } = entry;
+      messaging.forEach(event => {
         if (event.message) {
           console.log('Instagram Message received: ', JSON.stringify(event.message, null, 2));
         } else {
@@ -24,19 +25,8 @@ app.post('/webhook', (req, res) => {
         }
       });
     });
-  }
-
-  // Check if this is a Facebook message
-  else if (body.object === 'page') {
-    body.entry.forEach(entry => {
-      entry.messaging.forEach(event => {
-        if (event.message) {
-          console.log('Facebook Message received: ', JSON.stringify(event.message, null, 2));
-        } else {
-          console.log('Facebook Event received: ', JSON.stringify(event, null, 2));
-        }
-      });
-    });
+  } else {
+    console.log('Received webhook data - different:', JSON.stringify(body, null, 2));
   }
 
   // Respond with a 200 status to acknowledge receipt of the webhook
