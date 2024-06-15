@@ -8,7 +8,7 @@ const PORT = process.env.PORT || 8800;
 app.use(bodyParser.json());
 
 // Endpoint to receive Instagram webhook data
-app.post('/webhook', (req, res) => {
+app.post('/igwebhooks', (req, res) => {
   const body = req.body;
 
   console.log('Received webhook:', JSON.stringify(body, null, 2));
@@ -34,7 +34,7 @@ app.post('/webhook', (req, res) => {
 });
 
 // Endpoint to handle webhook verification
-app.get('/webhook', (req, res) => {
+app.get('/igwebhooks', (req, res) => {
   const mode = req.query['hub.mode'];
   const token = req.query['hub.verify_token'];
   const challenge = req.query['hub.challenge'];
