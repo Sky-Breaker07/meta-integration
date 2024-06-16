@@ -20,13 +20,29 @@ const sendMessage = (recipientId, messageText) => {
     },
   };
 
-  axios.post(`https://graph.facebook.com/v20.0/me/messages?access_token=${PAGE_ACCESS_TOKEN}`, messageData)
+  axios.post(`https://graph.facebook.com/v16.0/me/messages?access_token=${PAGE_ACCESS_TOKEN}`, messageData)
     .then(response => {
       console.log('Message sent successfully:', response.data);
     })
     .catch(error => {
       console.error('Error sending message:', error.response ? error.response.data : error.message);
     });
+};
+
+// Function to get user profile details from Facebook
+const getUserProfile = async (userId) => {
+  try {
+    const response = await axios.get(`https://graph.facebook.com/${userId}`, {
+      params: {
+        access_token: PAGE_ACCESS_TOKEN,
+        fields: 'first_name,last_name,profile_pic',
+      },
+    });
+    return response.data;
+  } catch (error) {
+    console.error('Error fetching user profile:', error.response ? error.response.data : error.message);
+    return null;
+  }
 };
 
 // Endpoint to receive Instagram and Facebook webhook data
@@ -47,18 +63,27 @@ app.post('/webhooks', (req, res) => {
       });
     });
   } else if (body.object === 'page') {
-    body.entry.forEach(entry => {
+    body.entry.forEach(async entry => {
       const { id, time, messaging } = entry;
-      messaging.forEach(event => {
+      messaging.forEach(async event => {
         if (event.message) {
           const senderId = event.sender.id;
           const messageText = event.message.text;
           console.log('Facebook Message received: ', JSON.stringify(event.message, null, 2));
 
-          // Store the senderId and messageText for later use
-          // You may want to store this in a database or in-memory storage
-          // For simplicity, we're just logging it here
-          console.log('Storing senderId and messageText:', senderId, messageText);
+          // Fetch user profile details
+          const userProfile = await getUserProfile(senderId);
+          if (userProfile) {
+            console.log('User Profile:', userProfile);
+
+            // Store the user profile details (for now, just log them)
+            // You can replace this with your database storage logic
+            // For example, store in a database
+            // await saveUserProfileToDatabase(userProfile);
+          }
+
+          // You can also respond to the message if needed
+          // sendMessage(senderId, `Hello ${userProfile.first_name}, you said: "${messageText}".`);
         } else {
           console.log('Facebook Event received: ', JSON.stringify(event, null, 2));
         }
