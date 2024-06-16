@@ -4,7 +4,7 @@ const axios = require('axios');
 
 const app = express();
 const PORT = process.env.PORT || 8800;
-const PAGE_ACCESS_TOKEN = 'your_page_access_token';  // Replace with your actual Page Access Token
+const PAGE_ACCESS_TOKEN = 'EAAN8HHlcYXwBOzYjxEVEIeZAulUyRthICoNHOhTlMkZAZB0cjh8yrD3exs7eh9SUSdnTR1pHYqFs7x8s5chN8owU0p7u337JGEDNKujJ5Qii4KZCouQioWjkO2m75JcDyZCExf8ER4nC8cMycSFGQeCtYZCWiW2KUOuVh14ZCzdDGuZBjys1cOSry4uWRRFmZAMxpIAZDZD';  // Replace with your actual Page Access Token
 
 // Use body-parser middleware to parse JSON bodies
 app.use(bodyParser.json());
@@ -20,7 +20,7 @@ const sendMessage = (recipientId, messageText) => {
     },
   };
 
-  axios.post(`https://graph.facebook.com/v16.0/me/messages?access_token=${PAGE_ACCESS_TOKEN}`, messageData)
+  axios.post(`https://graph.facebook.com/v20.0/me/messages?access_token=${PAGE_ACCESS_TOKEN}`, messageData)
     .then(response => {
       console.log('Message sent successfully:', response.data);
     })
